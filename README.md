@@ -14,11 +14,13 @@ To avoid losing veterinary practitioner’s faith in Home Delivery as a service 
 
 ## Product Forecast Report
 ### Data Overview
-This project utilises data collected and stored by Premier Vet Alliance Ltd. in multiple lookup and trasactional tables on Microsoft SQL Server. The lookup tables storing the customer, client, and distribuor product data could range from a few thousand to over hundred thousand enteries. Whereas, the transactional tables, holding the order and prescription details held over a million rows of record. 
+This project utilises data collected and stored by Premier Vet Alliance Ltd. in multiple lookup and transactional tables on Microsoft SQL Server. The lookup tables storing the customer, client, and distributor product data could range from a few thousand to over a hundred thousand entries. Whereas the transactional tables, holding the delivery order and prescription details, held over a million records.
 
-The Entity Relationship Diagram has been attached below to understand teh relationship between the tables utilised in this project.
+The Entity Relationship Diagram has been attached below to provide an understand of the relationship between the tables utilised in this project.
 
 
+### Data Preparation
+One of the biggest challenges faced during this project was accuartely reporting the future product quantities. A client can have two distributors, and when one or more product is unavailable with their primary distributor, the product is automatically sent to the secondary distributor. The challenge arises 
 
 ### SQL Code
 ```
