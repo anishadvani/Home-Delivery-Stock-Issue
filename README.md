@@ -13,15 +13,17 @@ To avoid losing veterinary practitioner’s faith in Home Delivery as a service 
 ### Data Overview
 
 ## Product Forecast Report
+A paginated report estimating future order volumes sent to the distributors monthly to manage stock availability and reduce stock related issues.
+
 ### Data Overview
-This project utilises data collected and stored by Premier Vet Alliance Ltd. in multiple lookup and transactional tables on Microsoft SQL Server. The lookup tables storing the customer, client, and distributor product data could range from a few thousand to over a hundred thousand entries. Whereas the transactional tables, holding the delivery order and prescription details, held over a million records.
+This project utilises data collected and stored by Premier Vet Alliance Ltd. in multiple lookup and transactional tables on Microsoft SQL Server. The lookup tables storing the customer, client, and distributor product data ranged from a few thousand to over a hundred thousand entries. Whereas the transactional tables, holding the delivery order and prescription details, held over a million records.
 
 The Entity Relationship Diagram has been attached below to provide an understand of the relationship between the tables utilised in this project.
 
+![Alt text](https://github.com/anishadvani/Home-Delivery-Stock-Issue/blob/main/pva_erd_deliveries.png)
 
 ### Data Preparation
-One of the biggest challenges faced during this project was accuartely reporting the future product quantities. A client can have two distributors, and when one or more product is unavailable with their primary distributor, the product is automatically sent to the secondary distributor. The challenge arises 
-
+A SQL query was written to drive the paginated report, estimating the expected product volumes based on the currently approved prescriptions. One of the biggest challenges faced during this project was accuartely reporting the future product quantities for every distributor. A veterinary practice can be associated with two distributors, and when one or more prescribed medications are not stocked by their primary distributor, the delivery would be automatically rerouted to the secondary distributor. 
 ### SQL Code
 ```
 USE[pva_petcareplan_prod_uk];
@@ -55,9 +57,11 @@ FROM (
 			,DATETRUNC(MONTH,(DATEADD(DAY, - 16, del.EstimatedDeliveryDate))) AS EstimatedProcessingMonth -- To get Start date for the 'estimated' processing month.
 			,FORMAT(DATETRUNC(MONTH,(DATEADD(DAY, - 16, del.EstimatedDeliveryDate))), 'MMMM yyyy') AS ProcessingMonth
 			,prep.Name AS ProductName
-			-- An order can have multiple prescribed product and hence multiple rows with the same delivery id.
-			-- If one or more products are unavailable with the primary  distributor, ALL product lines are rerouted to the secondary distributor if they have one.
-			-- The following CASE statements update the order details based on product unavailability, using a window function. 
+
+-- An order can have multiple prescribed product and hence multiple rows with the same delivery id.
+-- If one or more products are unavailable with the primary distributor, ALL product lines are rerouted to the secondary distributor even if they can fulfil part of the order.
+-- The following CASE statements update the order details based on product unavailability, using a window function.
+
 			,CASE WHEN SUM(CASE WHEN distp.DistributorProductSku IS NULL  OR  distp.DistributorProductSku = '' THEN 1 ELSE 0 END) OVER (PARTITION BY del.id) > 0 
 				THEN dist2.Name
 				ELSE dist.Name
